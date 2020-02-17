@@ -13,25 +13,22 @@ path <- 'data/mating.disrupt.test.xlsx'
 
 
 
-x %>% 
-    mutate(Date = lubridate::ymd(Date)) -> block_data
+(x %>% 
+    mutate(Date = lubridate::ymd(Date)) -> block_data)
 
-y %>% 
+(y %>% 
     mutate_at(vars(matches('Start|End')), ~ lubridate::ymd(.)) %>% 
-    rename_all(~ str_replace_all(.," ",".")) -> lookup_table
+    rename_all(~ str_replace_all(.," ",".")) -> lookup_table)
 
 
 
 
-# I can only use tis function for a single block -  in this case A 1
-# To demonstrate I will only use the first two rows of the lookup_table
 
-# lookup_table <- head(lookup_table,2)
-
+d = '19 jan 19' %>% lubridate::dmy()
 
 mating_disruption <- function(d){
     
-    # create a tibble with all start and end dates cartesian product all input dates to handle multiple dates at once
+    # create a dataframe with all start and end dates and all input dates to handle multiple dates at once
     input_df <- merge(d, lookup_table)
     
     # use logical indexing and vectorized form for calculating all disrupt logical values in one go for speed
@@ -40,6 +37,8 @@ mating_disruption <- function(d){
     # for each date, check if any value was TRUE, if so, return TRUE, otherwise return FALSE
     output_df <- aggregate(input_df["disrupt"], by = list(date = input_df$x, block = input_df$Block), FUN = any)
     
+  
+
 }
 
 # Doesn't work----
@@ -53,4 +52,7 @@ dt %>% mating_disruption() -> result
         mutate_at(vars(Trap:Block), ~ str_replace_all(.,"A 1", replacement = "B 1") ) %>%
         bind_rows(block_data[,setdiff(names(block_data),'Mating Disrup')]))
 
-(mating_disruption(new_data_set$Date)-> test)
+
+
+
+(block_data$Date %>% mating_disruption() ->new_table)
