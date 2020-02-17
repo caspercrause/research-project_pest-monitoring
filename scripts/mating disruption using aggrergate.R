@@ -6,7 +6,7 @@ path <- 'data/mating.disrupt.test.xlsx'
 
 (x <- readxl::read_xlsx(path,range = 'A4:F29',col_names = T)) 
 
-(y <- readxl::read_xlsx(path,range = "I4:L9",col_names = T ))
+(y <- readxl::read_xlsx(path,range = "I4:K9",col_names = T ))
 
 
 
@@ -34,7 +34,7 @@ mating_disruption <- function(d){
     # use logical indexing and vectorized form for calculating all disrupt logical values in one go for speed
     input_df$disrupt <- input_df$x >= input_df$Mating.Disrupt.Start & input_df$x <= input_df$Mating.Disrupt.End
     
-    # for each date, check if any value was TRUE, if so, return TRUE, otherwise return FALSE
+    # for each date and block, check if any value was TRUE, if so, return TRUE, otherwise return FALSE
     output_df <- aggregate(input_df["disrupt"], by = list(date = input_df$x, block = input_df$Block), FUN = any)
     
   
@@ -45,7 +45,7 @@ mating_disruption <- function(d){
 dt<-  c('1 jan 19', '22 jan 19','7 may 19') %>% lubridate::dmy()
 dt %>% mating_disruption() -> result
 
-
+# Test on new data
 (new_data_set <- block_data %>% 
         select(-`Mating Disrup`) %>% 
         slice(10:15) %>% 
@@ -55,4 +55,6 @@ dt %>% mating_disruption() -> result
 
 
 
-(block_data$Date %>% mating_disruption() ->new_table)
+(new_data_set$Date %>% mating_disruption() -> new_table)
+
+x
