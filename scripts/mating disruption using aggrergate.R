@@ -4,9 +4,9 @@ library(readxl)
 
 path <- 'data/mating.disrupt.test.xlsx'
 
-(x <- readxl::read_xlsx(path,range = 'A4:F29',col_names = T)) 
+(x   <- readxl::read_xlsx(path,range = 'A4:F29',col_names = T)) 
 
-(y <- readxl::read_xlsx(path,range = "I4:K9",col_names = T ))
+(y   <- readxl::read_xlsx(path,range = "I4:K9",col_names = T ))
 
 
 
@@ -28,7 +28,7 @@ d = '19 jan 19' %>% lubridate::dmy()
 
 mating_disruption <- function(d){
     
-    # create a dataframe with all start and end dates and all input dates to handle multiple dates at once
+    # create a dataframe with all start and end dates and all input dates to handle multiple dates at once (cartesian product)
     input_df <- merge(d, lookup_table)
     
     # use logical indexing and vectorized form for calculating all disrupt logical values in one go for speed
@@ -41,9 +41,9 @@ mating_disruption <- function(d){
 
 }
 
-# Doesn't work----
-dt<-  c('1 jan 19', '22 jan 19','7 may 19') %>% lubridate::dmy()
-dt %>% mating_disruption() -> result
+# test on a number of dates
+d <-  c('1 jan 19', '22 jan 19','7 may 19') %>% lubridate::dmy()
+d %>% mating_disruption() -> result
 
 # Test on new data
 (new_data_set <- block_data %>% 
@@ -57,4 +57,6 @@ dt %>% mating_disruption() -> result
 
 (new_data_set$Date %>% mating_disruption() -> new_table)
 
-x
+new_table$disrupt <- ifelse(new_table$disrupt == T,yes = 'YES', no = '')
+
+new_table
